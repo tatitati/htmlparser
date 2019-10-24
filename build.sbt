@@ -11,7 +11,6 @@ lazy val root = (project in file("."))
   .settings(
     name := "mapcrawler",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += "com.softwaremill.sttp.client" %% "core" % "2.0.0-M7",
     libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.4.2"
 
 
