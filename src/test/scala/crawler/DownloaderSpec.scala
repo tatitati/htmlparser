@@ -11,15 +11,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DownloaderSpec extends FunSuite {
   test("Can download url"){
-//    val result = basicRequest.get(uri"https://google.com").send()
-//    println(result.body)
-
-    val futureBody = Future{
-      val response: HttpResponse[String] = Http("https://elpais.com").asString
-      response.body
+    val futureHtml: Future[HttpResponse[String]] = Future{
+      Http("https://elpais.com").asString
     }
 
-    val body = Await.result(futureBody, 5 seconds)
-    println(body)
+    val html = Await.result(futureHtml, 5 seconds)
+    println(html.body.slice(0, 30))
   }
 }
