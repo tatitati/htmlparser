@@ -9,10 +9,9 @@ import scala.collection.mutable
 
 object Downloader {
   type Url = String
-  type ListUrl = Set[String]
-  type MapUrls = Map[Url, ListUrl]
+  type SetUrl = Set[String]
 
-  def parsePipeline(url: Url, acc: MapUrls = Map()): Future[ListUrl] = {
+  def parsePipeline(url: Url): Future[SetUrl] = {
     getHtml(url).map{doc => findLinks(doc)}
   }
 
@@ -20,7 +19,7 @@ object Downloader {
     Future {Jsoup.connect(url).get}
   }
 
-  def findLinks(doc: Document): ListUrl = {
+  def findLinks(doc: Document): SetUrl = {
     val body: Element = doc.body()
     val links: mutable.Buffer[Element] = body.select("a").asScala
 
@@ -30,9 +29,5 @@ object Downloader {
     } yield "https://monzo.com" + link.attr("href")
 
     whatever.toSet
-  }
-
-  def buildMap(url: Url, links: ListUrl, acc: MapUrls): MapUrls = {
-    acc + (url -> links)
   }
 }

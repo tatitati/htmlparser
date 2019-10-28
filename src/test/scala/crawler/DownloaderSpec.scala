@@ -8,37 +8,30 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DownloaderSpec extends FunSuite {
-  test("I can get the the body of a url"){
+  test("Can get html body WITHOUT using Futures") {
     val doc = Jsoup.connect("http://monzo.com/").get
     println(doc.body().html().slice(0, 20))
   }
 
-  test("I can use futures to do it async") {
+  test("Can get html body using Futures") {
     val futureDoc = Downloader.getHtml("http://monzo.com")
     val doc = Await.result(futureDoc, 5 seconds)
     println(doc.body().html().slice(0, 20))
   }
 
   test("I can parse links ") {
-    val futureDoc: Future[Set[String]] = Downloader.getHtml("http://monzo.com")
+    val futureLinks: Future[Set[String]] = Downloader
+      .getHtml("http://monzo.com")
       .map{ doc => Downloader.findLinks(doc)}
+
+    val links = Await.result(futureLinks, 5 seconds)
+    assert(38 == links.size)
   }
 
-  test("whole pipeline") {
-    val futureDoc = Downloader.parsePipeline("http://monzo.com")
-    val doc = Await.result(futureDoc, 5 seconds)
-    println(doc)
-  }
+  test("I can build a pipeline that automate the previous process") {
+    val futureLinks = Downloader.parsePipeline("http://monzo.com")
 
-  test("I can add to the map") {
-    val givenMap = Map(
-      "a" -> Set("a1", "a2")
-    )
-
-    val mapUpdated = Downloader.buildMap("b", Set("b1", "b2"), givenMap)
-    assert(Map(
-      "a" -> Set("a1", "a2"),
-      "b" -> Set("b1", "b2")
-    ) == mapUpdated)
+    val links = Await.result(futureLinks, 5 seconds)
+    assert(38 == links.size)
   }
 }

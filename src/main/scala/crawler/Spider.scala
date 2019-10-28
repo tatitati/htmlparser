@@ -3,16 +3,24 @@ package crawler
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Spider {
+object Spider {
   type Url = String
-  type ListUrl = Set[String]
+  type SetUrls = Set[String]
+  type MapUrls = Map[Url, SetUrls]
 
-//  def analyze(url: Url, acc: Map[Url, ListUrl]): Future[Map[Url, ListUrl]] = {
-//    acc.contains(url) match {
-//      case true => Future{acc}
-//      case false =>
-//        val links: Future[ListUrl] = Downloader.parsePipeline(url)
-//        links.flatMap{ analyze(_) }
-//    }
-//  }
+  def analyze(url: Url, acc: Map[Url, SetUrls] = Map()): Future[MapUrls] = {
+    acc.contains(url) match {
+      case true => Future{acc}
+      case false =>
+        val futureLinks: Future[SetUrls] = Downloader.parsePipeline(url)
+
+        futureLinks.map { (setUrls: SetUrls) =>
+            buildMap(url, setUrls, acc)
+        }
+    }
+  }
+
+  def buildMap(url: Url, links: SetUrls, acc: MapUrls): MapUrls = {
+    acc + (url -> links)
+  }
 }
