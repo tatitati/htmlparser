@@ -8,6 +8,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 class DownloaderSpec extends FunSuite {
   test("Can get html body WITHOUT using Futures") {
@@ -41,5 +42,25 @@ class DownloaderSpec extends FunSuite {
 
     val links = Await.result(futureLinks, 5 seconds)
     assert(38 ==links("http://monzo.com").size)
+  }
+
+  test("Can a future has multiple callbacks?"){
+      val a = Future{
+        Thread.sleep(5000)
+        println("this is the FUTURE")
+        1 + 1
+      }
+
+      a onComplete{
+        case Success(number) => println("FIRST callback: " + number)
+        case Failure(_) => println("fucked")
+      }
+
+      a onComplete{
+        case Success(number) => println("SECOND callback: " + number)
+        case Failure(_) => println("fucked")
+      }
+
+      Thread.sleep(50000)
   }
 }

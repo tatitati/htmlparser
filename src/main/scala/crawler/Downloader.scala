@@ -29,7 +29,7 @@ object Downloader {
     val whatever: mutable.Buffer[String] = for {
       link <- links
       if link.attr("href").startsWith("/")
-    } yield "https://monzo.com" + link.attr("href")
+    } yield Baseurl.url + link.attr("href")
 
     whatever.toSet
   }
