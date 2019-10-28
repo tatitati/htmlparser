@@ -1,7 +1,9 @@
 package crawler
 
+import crawler.Spider.MapUrls
 import org.jsoup.Jsoup
 import org.scalatest.FunSuite
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Future
@@ -28,10 +30,16 @@ class DownloaderSpec extends FunSuite {
     assert(38 == links.size)
   }
 
-  test("I can build a pipeline that automate the previous process") {
-    val futureLinks = Downloader.parsePipeline("http://monzo.com")
+  test("Can build a map from the basic parameters") {
+    val resultMap = Downloader.buildMap("b", Set("b1", "b2"))
+
+    assert(Map("b" -> Set("b1", "b2")) == resultMap)
+  }
+
+  test("I can build a pipeline that automate the previous steps") {
+    val futureLinks: Future[MapUrls] = Downloader.parsePipeline("http://monzo.com")
 
     val links = Await.result(futureLinks, 5 seconds)
-    assert(38 == links.size)
+    assert(38 ==links("http://monzo.com").size)
   }
 }

@@ -8,19 +8,17 @@ object Spider {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def analyze(url: Url, acc: Map[Url, SetUrls] = Map()): Future[MapUrls] = {
-    acc.contains(url) match {
-      case true => Future{acc}
-      case false =>
-        val futureLinks: Future[SetUrls] = Downloader.parsePipeline(url)
+//  def analyze(url: Url, acc: Map[Url, SetUrls] = Map()): Future[MapUrls] = {
+//    acc.contains(url) match {
+//      case true => Future{acc}
+//      case false =>
+//        val futureLinks: Future[SetUrls] = Downloader.parsePipeline(url)
+//
+//        futureLinks.map { (setUrls: SetUrls) =>
+//            buildMap(url, setUrls, acc)
+//        }
+//    }
+//  }
 
-        futureLinks.map { (setUrls: SetUrls) =>
-            buildMap(url, setUrls, acc)
-        }
-    }
-  }
 
-  def buildMap(url: Url, links: SetUrls, acc: MapUrls): MapUrls = {
-    acc + (url -> links)
-  }
 }
