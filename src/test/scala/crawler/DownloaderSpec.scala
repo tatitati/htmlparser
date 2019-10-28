@@ -1,6 +1,6 @@
 package crawler
 
-import crawler.Spider.MapUrls
+import crawler.Downloader.MapUrls
 import org.jsoup.Jsoup
 import org.scalatest.FunSuite
 

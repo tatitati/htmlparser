@@ -1,9 +1,7 @@
 package crawler
 
-import crawler.Spider.{MapUrls, SetUrls, Url}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import collection.JavaConverters._
@@ -11,7 +9,8 @@ import scala.collection.mutable
 
 object Downloader {
   type Url = String
-  type SetUrl = Set[String]
+  type SetUrls = Set[String]
+  type MapUrls = Map[Url, SetUrls]
 
   def parsePipeline(url: Url): Future[MapUrls] = {
     getHtml(url)
@@ -23,7 +22,7 @@ object Downloader {
     Future {Jsoup.connect(url).get}
   }
 
-  def findLinks(doc: Document): SetUrl = {
+  def findLinks(doc: Document): SetUrls = {
     val body: Element = doc.body()
     val links: mutable.Buffer[Element] = body.select("a").asScala
 
