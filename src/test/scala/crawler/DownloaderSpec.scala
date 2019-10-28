@@ -19,7 +19,7 @@ class DownloaderSpec extends FunSuite {
     println(doc.body().html().slice(0, 20))
   }
 
-  test("I can parse links ") {
+  test("I can download the body html and parse links ") {
     val futureLinks: Future[Set[String]] = Downloader
       .getHtml("http://monzo.com")
       .map{ doc => Downloader.findLinks(doc)}
