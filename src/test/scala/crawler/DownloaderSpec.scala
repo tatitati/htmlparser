@@ -44,23 +44,5 @@ class DownloaderSpec extends FunSuite {
     assert(38 ==links("http://monzo.com").size)
   }
 
-  test("Can a future has multiple callbacks?"){
-      val a = Future{
-        Thread.sleep(5000)
-        println("this is the FUTURE")
-        1 + 1
-      }
 
-      a onComplete{
-        case Success(number) => println("FIRST callback: " + number)
-        case Failure(_) => println("fucked")
-      }
-
-      a onComplete{
-        case Success(number) => println("SECOND callback: " + number)
-        case Failure(_) => println("fucked")
-      }
-
-      Thread.sleep(50000)
-  }
 }
