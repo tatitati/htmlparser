@@ -14,9 +14,7 @@ object Downloader {
 
   def parseMultiplePipeline(urls: SetUrls): Future[Set[MapUrls]] = {
     val maps: Set[Future[MapUrls]] = urls.map(Downloader.parsePipeline(_))
-    val futureSet = Future.sequence(maps)
-
-    futureSet
+    Future.sequence(maps)
   }
 
   def parsePipeline(url: Url): Future[MapUrls] = {
