@@ -50,6 +50,7 @@ class DownloaderSpec extends FunSuite {
 
     val links = Await.result(all, 5 seconds)
     val mapJoined: MapUrls = links.reduce(_ ++ _)
+
     assert(true == mapJoined.contains(url1))
     assert(true == mapJoined.contains(url2))
   }
