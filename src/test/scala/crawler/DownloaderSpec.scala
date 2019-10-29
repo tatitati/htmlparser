@@ -1,6 +1,6 @@
 package crawler
 
-import crawler.Downloader.MapUrls
+import crawler.Downloader.{MapUrls, SetUrls}
 import org.jsoup.Jsoup
 import org.scalatest.FunSuite
 
@@ -31,18 +31,9 @@ class DownloaderSpec extends FunSuite {
     assert(38 == links.size)
   }
 
-  test("Can build a map from the basic parameters") {
-    val resultMap = Downloader.buildMap("b", Set("b1", "b2"))
-
-    assert(Map("b" -> Set("b1", "b2")) == resultMap)
-  }
-
   test("I can build a pipeline that automate the previous steps") {
-    val futureLinks: Future[MapUrls] = Downloader.parsePipeline("http://monzo.com")
+    val futureLinks: Future[SetUrls] = Downloader.parsePipeline("http://monzo.com")
 
-    val links = Await.result(futureLinks, 5 seconds)
-    assert(38 ==links("http://monzo.com").size)
+    val links: SetUrls = Await.result(futureLinks, 5 seconds)
   }
-
-
 }
