@@ -2,14 +2,14 @@ package crawler
 
 import crawler.Downloader.{MapUrls, SetUrls, Url}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import cats._
 import cats.Functor
 import cats.data.Nested
 import cats.implicits._
+import scala.concurrent.duration._
 
 object Spider {
   def shouldIVisit(link: Url, mapUrls: MapUrls): Boolean = {
@@ -18,22 +18,27 @@ object Spider {
 
 
   def main(args: Array[String]): Unit = {
-    controller(Baseurl.url)
+    start(Baseurl.url)
   }
 
-  def controller(url: Url, visitedLinks: SetUrls = Set(), mapUrls:MapUrls = Map()): Unit = {
-    val futureMap: Future[MapUrls] = analyze(url)
+  def start(url: Url, mapUrls: MapUrls = Map()): Unit = {
+    val futureMap: Future[SetUrls] = analyze(url)
 
-    futureMap foreach { mapUrls: MapUrls =>
-      println(url + " | " + visitedLinks.size)
-      val parsedLinks = mapUrls(url)
-      val newlinks = visitedLinks ++ parsedLinks
+    futureMap foreach { urls: SetUrls =>
+      val newmap = mapUrls ++ Map(url -> urls)
+
+      for(url <- urls){
+        if(shouldIVisit(url, newmap)){
+          start(url, newmap)
+        }
+      }
     }
-
-    Thread.sleep(6000)
+    
+    println("\n\n")
+    println(mapUrls.keys)
   }
 
-  def analyze(url: Url): Future[MapUrls] = {
-    Downloader.parsePipeline(url)
+  def analyze(url: Url): Future[SetUrls] = {
+    Downloader.parsePipeline2(url)
   }
 }

@@ -27,4 +27,8 @@ class SpiderSpec extends FunSuite {
     assert(false == should1)
     assert(true == should2)
   }
+
+  test("can provide next links to parse"){
+    Spider.start(Baseurl.url)
+  }
 }

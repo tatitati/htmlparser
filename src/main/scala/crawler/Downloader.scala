@@ -23,6 +23,11 @@ object Downloader {
       .map{links => buildMap(url, links)}
   }
 
+  def parsePipeline2(url: Url): Future[SetUrls] = {
+    getHtml(url)
+      .map{doc => findLinks(doc)}
+  }
+
   def getHtml(url: Url): Future[Document] = {
     Future {Jsoup.connect(url).get}
   }
