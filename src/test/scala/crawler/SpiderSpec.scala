@@ -14,16 +14,14 @@ class SpiderSpec extends FunSuite {
       parsed1,
       Map(
         parsed1 -> Set(noparsedA, parsed2, noparsedB, parsed1),
-        parsed2 -> Set(noparsedA, parsed2, noparsedB, parsed1)
-      )
+        parsed2 -> Set(noparsedA, parsed2, noparsedB, parsed1))
     )
 
     val should2 = Spider.shouldIVisit(
       noparsedA,
       Map(
         parsed1 -> Set(noparsedA, parsed2, noparsedB, parsed1),
-        parsed2 -> Set(noparsedA, parsed2, noparsedB, parsed1)
-      )
+        parsed2 -> Set(noparsedA, parsed2, noparsedB, parsed1))
     )
 
     assert(false == should1)
