@@ -17,18 +17,13 @@ object Spider {
     controller(Baseurl.url)
   }
 
-  def controller(url: Url, visitedLinks: SetUrls = Set()): Unit = {
+  def controller(url: Url, visitedLinks: SetUrls = Set(), mapUrls:MapUrls = Map()): Unit = {
     val futureMap: Future[MapUrls] = analyze(url)
 
-    futureMap foreach { subMap: MapUrls =>
+    futureMap foreach { mapUrls: MapUrls =>
       println(url + " | " + visitedLinks.size)
-      val parsedLinks = subMap(url)
+      val parsedLinks = mapUrls(url)
       val newlinks = visitedLinks ++ parsedLinks
-
-      for {
-        link <- newlinks
-        if !visitedLinks.contains(link)
-      } yield controller(link, newlinks)
     }
 
     Thread.sleep(6000)

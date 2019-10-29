@@ -40,4 +40,17 @@ class DownloaderSpec extends FunSuite {
     assert(38 ==links1("http://monzo.com").size)
     assert(37 ==links2("http://www.monzo.com/blog/2017/01/13/monzo-extraordinary-ideas-board/").size)
   }
+
+  test("I can parse multiple at the same time and joined both maps") {
+    val url1 = "http://monzo.com"
+    val url2 = "http://www.monzo.com/blog/2017/01/13/monzo-extraordinary-ideas-board/"
+    val urls = Set(url1, url2)
+
+    val all: Future[Set[MapUrls]] = Downloader.parseMultiplePipeline(urls)
+
+    val links = Await.result(all, 5 seconds)
+    val mapJoined: MapUrls = links.reduce(_ ++ _)
+    assert(true == mapJoined.contains(url1))
+    assert(true == mapJoined.contains(url2))
+  }
 }
