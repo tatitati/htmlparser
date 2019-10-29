@@ -12,6 +12,10 @@ import cats.data.Nested
 import cats.implicits._
 
 object Spider {
+  def shouldIVisit(link: Url, mapUrls: MapUrls): Boolean = {
+    !mapUrls.contains(link)
+  }
+
 
   def main(args: Array[String]): Unit = {
     controller(Baseurl.url)
