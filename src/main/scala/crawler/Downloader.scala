@@ -12,10 +12,9 @@ object Downloader {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def parsePipeline(url: Url): Future[MapUrls] = {
+  def parsePipeline(url: Url): Future[SetUrls] = {
     getHtml(url)
       .map{doc => findLinks(doc)}
-      .map{links => buildMap(url, links)}
   }
 
   def getHtml(url: Url): Future[Document] = {
@@ -33,6 +32,4 @@ object Downloader {
 
     whatever.toSet
   }
-
-  def buildMap(url: Url, links: SetUrls): MapUrls = Map(url -> links)
 }
