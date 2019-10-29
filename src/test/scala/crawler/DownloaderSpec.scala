@@ -3,7 +3,6 @@ package crawler
 import crawler.Downloader.{MapUrls, SetUrls}
 import org.jsoup.Jsoup
 import org.scalatest.FunSuite
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Future
@@ -23,7 +22,7 @@ class DownloaderSpec extends FunSuite {
   }
 
   test("I can download the body html and parse links ") {
-    val futureLinks: Future[Set[String]] = Downloader
+    val futureLinks: Future[SetUrls] = Downloader
       .getHtml("http://monzo.com")
       .map{ doc => Downloader.findLinks(doc)}
 
@@ -32,8 +31,13 @@ class DownloaderSpec extends FunSuite {
   }
 
   test("I can build a pipeline that automate the previous steps") {
-    val futureLinks: Future[SetUrls] = Downloader.parsePipeline("http://monzo.com")
+    val futureLinks1: Future[MapUrls] = Downloader.parsePipeline("http://monzo.com")
+    val futureLinks2: Future[MapUrls] = Downloader.parsePipeline("http://www.monzo.com/blog/2017/01/13/monzo-extraordinary-ideas-board/")
 
-    val links: SetUrls = Await.result(futureLinks, 5 seconds)
+    val links1 = Await.result(futureLinks1, 5 seconds)
+    val links2 = Await.result(futureLinks2, 5 seconds)
+
+    assert(38 ==links1("http://monzo.com").size)
+    assert(37 ==links2("http://www.monzo.com/blog/2017/01/13/monzo-extraordinary-ideas-board/").size)
   }
 }

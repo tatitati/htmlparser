@@ -1,37 +1,40 @@
 package crawler
 
 import crawler.Downloader.{MapUrls, SetUrls, Url}
-import scala.annotation.tailrec
-import scala.concurrent.{Await, Future}
+
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
-import scala.concurrent.duration._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import cats._
+import cats.Functor
+import cats.data.Nested
+import cats.implicits._
 
 object Spider {
 
   def main(args: Array[String]): Unit = {
-    val futureMap: Future[MapUrls] = analyze(Baseurl.url)
-
-    futureMap foreach { mapped =>
-      println("\n\n\nFINAL:\n" + mapped)
-    }
-
-    Thread.sleep(50000)
+    controller(Baseurl.url)
   }
 
-  def analyze(url: Url, completedNodes: MapUrls = Map(), requested: List[String] = List()): Future[MapUrls] = {
-    if(!completedNodes.contains(url)) {
-      val futureMap: Future[MapUrls] = Downloader.parsePipeline(url)
+  def controller(url: Url, visitedLinks: SetUrls = Set()): Unit = {
+    val futureMap: Future[MapUrls] = analyze(url)
 
-      futureMap foreach { subMap =>
-        val foundLinks = subMap(url)
+    futureMap foreach { subMap: MapUrls =>
+      println(url + " | " + visitedLinks.size)
+      val parsedLinks = subMap(url)
+      val newlinks = visitedLinks ++ parsedLinks
 
-        foundLinks.map { link =>
-          analyze(link, completedNodes ++ subMap)
-        }
-      }
+      for {
+        link <- newlinks
+        if !visitedLinks.contains(link)
+      } yield controller(link, newlinks)
+    }
 
-      futureMap
-    } else Future{completedNodes}
+    Thread.sleep(6000)
+  }
+
+  def analyze(url: Url): Future[MapUrls] = {
+    Downloader.parsePipeline(url)
   }
 }

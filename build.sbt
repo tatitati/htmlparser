@@ -11,9 +11,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "mapcrawler",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.4.2"
-
-
+    libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.4.2",
+    //  Cats
+    libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0-M4",
+    libraryDependencies += "org.typelevel" %% "cats-effect" % "1.3.1"
   )
 
 
