@@ -12,18 +12,7 @@ object Downloader {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def parseMultiplePipeline(urls: SetUrls): Future[Set[MapUrls]] = {
-    val maps: Set[Future[MapUrls]] = urls.map(Downloader.parsePipeline(_))
-    Future.sequence(maps)
-  }
-
-  def parsePipeline(url: Url): Future[MapUrls] = {
-    getHtml(url)
-      .map{doc => findLinks(doc)}
-      .map{links => buildMap(url, links)}
-  }
-
-  def parsePipeline2(url: Url): Future[SetUrls] = {
+  def parsePipeline1(url: Url): Future[SetUrls] = {
     getHtml(url)
       .map{doc => findLinks(doc)}
   }
