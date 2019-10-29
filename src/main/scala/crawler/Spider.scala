@@ -12,13 +12,12 @@ import cats.implicits._
 import scala.concurrent.duration._
 
 object Spider {
-  def shouldIVisit(link: Url, mapUrls: MapUrls): Boolean = {
-    !mapUrls.contains(link)
-  }
-
-
   def main(args: Array[String]): Unit = {
     start(Baseurl.url)
+  }
+
+  def shouldIVisit(link: Url, mapUrls: MapUrls): Boolean = {
+    !mapUrls.contains(link)
   }
 
   def start(url: Url, mapUrls: MapUrls = Map()): Unit = {
