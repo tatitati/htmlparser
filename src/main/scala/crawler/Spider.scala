@@ -9,35 +9,47 @@ import cats._
 import cats.Functor
 import cats.data.Nested
 import cats.implicits._
+
+import scala.collection.immutable.Queue
 import scala.concurrent.duration._
 
 object Spider {
   def main(args: Array[String]): Unit = {
-    start(Baseurl.url)
+    val q = Queue(Baseurl.url)
+
+    scan(q)
+    Thread.sleep(40000)
   }
 
-  def shouldIVisit(link: Url, mapUrls: MapUrls): Boolean = {
-    !mapUrls.contains(link)
-  }
+  def scan(queue: Queue[Url], mapUrls: MapUrls = Map(), all: SetUrls = Set()): MapUrls = {
 
-  def start(url: Url, mapUrls: MapUrls = Map()): Unit = {
-    val futureMap: Future[SetUrls] = analyze(url)
+    println("QUEUE: " + queue.length)
 
-    futureMap foreach { urls: SetUrls =>
-      val newmap = mapUrls ++ Map(url -> urls)
+    while(!queue.isEmpty) {
+      val (url, q) = queue.dequeue
 
-      for(url <- urls){
-        if(shouldIVisit(url, newmap)){
-          start(url, newmap)
-        }
+      if(!mapUrls.contains(url)) {
+        val parsedUrls: SetUrls = Downloader.parseUrlSerial(url)
+        val newAll: SetUrls = all ++ parsedUrls
+
+        val parsedNotEnqueued: SetUrls = newAll diff parsedUrls //problem here, is empty at the start
+        println(newAll)
+        println(parsedNotEnqueued)
+        Thread.sleep(10000)
+        scan(q ++ parsedNotEnqueued, mapUrls ++ Map(url -> parsedUrls), newAll)
+
+      } else {
+        println("Already processed: " + url)
+        scan(q, mapUrls, all)
       }
     }
-    
-    println("\n\n")
-    println(mapUrls.keys)
-  }
 
-  def analyze(url: Url): Future[SetUrls] = {
-    Downloader.parsePipeline2(url)
+    println("RESULT:")
+    for((k, v) <- mapUrls){
+      println("URL:" + k)
+      println(v.foreach{_ => println("\t\t" + _)})
+      println("################")
+    }
+    mapUrls
   }
 }

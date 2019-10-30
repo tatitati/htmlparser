@@ -12,13 +12,21 @@ object Downloader {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def parsePipeline1(url: Url): Future[SetUrls] = {
+  def parseUrl(url: Url): Future[SetUrls] = {
     getHtml(url)
       .map{doc => findLinks(doc)}
   }
 
+  def parseUrlSerial(url: Url): SetUrls = {
+      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
+  }
+
   def getHtml(url: Url): Future[Document] = {
     Future {Jsoup.connect(url).get}
+  }
+
+  def getHtmlSerial(url: Url): Document = {
+    Jsoup.connect(url).get
   }
 
   def findLinks(doc: Document): SetUrls = {
@@ -32,6 +40,4 @@ object Downloader {
 
     whatever.toSet
   }
-
-  def buildMap(url: Url, links: SetUrls): MapUrls = Map(url -> links)
 }
