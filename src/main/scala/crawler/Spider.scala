@@ -24,21 +24,11 @@ object Spider {
           val newDiscoveredUrls: SetUrls = parsedUrls diff discoveredUrls
           val newAll: SetUrls = discoveredUrls ++ newDiscoveredUrls
 
-          println("\n=======\n")
-          println("queue:" + queue.size)
-          println("new parsed:" + parsedUrls.size)
-          println("parsed - knowns:" + newDiscoveredUrls.size)
-          println("all discovered: " + newAll.size)
-          println("adding to queue...")
-          println(newDiscoveredUrls)
-
           scan(q ++ newDiscoveredUrls, mapProcessed ++ Map(url -> parsedUrls), newAll)
         } else {
           scan(q, mapProcessed, discoveredUrls)
         }
     }
-
-
 
     println("RESULT:")
     for((k, v) <- mapProcessed){
