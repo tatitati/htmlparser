@@ -48,13 +48,13 @@ class DownloaderSpec extends FunSuite {
     val b = Set("a", "b", "d")
     val empty: Set[String] = Set()
 
-    val c = a diff b
-    val d = b diff a
-    val e = empty diff a
+    val ab = a diff b
+    val ba = b diff a
+    val emptyA = empty diff a
 
-    println(c) // Set(f, c)
-    println(d) // Set()
-    println(e) // Set()
+    println(ab) // Set(f, c)
+    println(ba) // Set()
+    println(emptyA) // Set()
   }
 
   test("set"){

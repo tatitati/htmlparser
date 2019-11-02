@@ -2,54 +2,50 @@ package crawler
 
 import crawler.Downloader.{MapUrls, SetUrls, Url}
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import cats._
-import cats.Functor
-import cats.data.Nested
-import cats.implicits._
-
+import scala.annotation.tailrec
 import scala.collection.immutable.Queue
-import scala.concurrent.duration._
 
 object Spider {
   def main(args: Array[String]): Unit = {
-    val q = Queue(Baseurl.url)
+    scan(Queue(Baseurl.url))
 
-    scan(q)
     Thread.sleep(40000)
   }
 
-  def scan(queue: Queue[Url], mapUrls: MapUrls = Map(), all: SetUrls = Set()): MapUrls = {
+  def scan(queue: Queue[Url], mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()): MapUrls = {
 
-    println("QUEUE: " + queue.length)
+    queue.isEmpty match {
+      case true => mapProcessed
+      case false =>
+        val (url, q) = queue.dequeue
 
-    while(!queue.isEmpty) {
-      val (url, q) = queue.dequeue
+        if(!mapProcessed.contains(url)) {
+          val parsedUrls: SetUrls = Downloader.parseUrlSerial(url)
+          val newDiscoveredUrls: SetUrls = parsedUrls diff discoveredUrls
+          val newAll: SetUrls = discoveredUrls ++ newDiscoveredUrls
 
-      if(!mapUrls.contains(url)) {
-        val parsedUrls: SetUrls = Downloader.parseUrlSerial(url)
-        val newAll: SetUrls = all ++ parsedUrls
+          println("\n=======\n")
+          println("queue:" + queue.size)
+          println("new parsed:" + parsedUrls.size)
+          println("parsed - knowns:" + newDiscoveredUrls.size)
+          println("all discovered: " + newAll.size)
+          println("adding to queue...")
+          println(newDiscoveredUrls)
 
-        val parsedNotEnqueued: SetUrls = newAll diff parsedUrls //problem here, is empty at the start
-        println(newAll)
-        println(parsedNotEnqueued)
-        Thread.sleep(10000)
-        scan(q ++ parsedNotEnqueued, mapUrls ++ Map(url -> parsedUrls), newAll)
-
-      } else {
-        println("Already processed: " + url)
-        scan(q, mapUrls, all)
-      }
+          scan(q ++ newDiscoveredUrls, mapProcessed ++ Map(url -> parsedUrls), newAll)
+        } else {
+          scan(q, mapProcessed, discoveredUrls)
+        }
     }
 
+
+
     println("RESULT:")
-    for((k, v) <- mapUrls){
+    for((k, v) <- mapProcessed){
       println("URL:" + k)
       println(v.foreach{_ => println("\t\t" + _)})
       println("################")
     }
-    mapUrls
+    mapProcessed
   }
 }
