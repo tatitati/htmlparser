@@ -12,13 +12,8 @@ object Downloader {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def parseUrl(url: Url): Future[SetUrls] = {
-    getHtml(url)
-      .map{doc => findLinks(doc)}
-  }
-
   def parseUrlSerial(url: Url): SetUrls = {
-      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
+    findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
   }
 
   def getHtml(url: Url): Future[Document] = {

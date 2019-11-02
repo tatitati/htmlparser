@@ -1,15 +1,11 @@
 package crawler
 
 import crawler.Downloader.{MapUrls, SetUrls, Url}
-
-import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
 object Spider {
   def main(args: Array[String]): Unit = {
     scan(Queue(Baseurl.url))
-
-    Thread.sleep(40000)
   }
 
   def scan(queue: Queue[Url], mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()): MapUrls = {
