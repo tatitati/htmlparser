@@ -62,4 +62,26 @@ class LearningSpec extends FunSuite {
     }
     val c: Future[List[Int]] = Future.sequence(b)
   }
+
+  test("Callbacks are attached when returning a Future?: NO") {
+    def justwait(number: Int): Future[Int] = {
+      val fut = Future{
+        Thread.sleep(1000)
+        number+1
+      }
+
+      fut foreach { n =>
+        n * 10
+      }
+
+      fut
+    }
+
+    val result = justwait(5)
+
+    val total = Await.result(result, 5 seconds)
+    assert(6 == total)
+
+
+  }
 }

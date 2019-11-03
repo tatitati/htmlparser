@@ -15,7 +15,7 @@ object Spider {
     Thread.sleep(80000)
   }
 
-  def scan(unexploredUrls: SetUrls = Set(), mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()): Future[MapUrls] = {
+  def scan(unexploredUrls: SetUrls = Set(), mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()):Unit = {
     val futureUrls: Future[MapUrls] = Downloader.parseBunchUrls(unexploredUrls)
 
     futureUrls foreach { (m: MapUrls) =>
