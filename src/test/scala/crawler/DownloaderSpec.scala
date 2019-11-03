@@ -43,4 +43,14 @@ class DownloaderSpec extends FunSuite {
 
     assert(Set("a", "b", "c", "d") === a.values.toSet.flatten)
   }
+
+  test("zip behaviour") {
+    val a = Set("a", "b", "c", "d", "f")
+    val b = Set("A", "B", "C", "D", "F")
+
+    val c = (a zip b)
+
+    assert(Set(("b","B"), ("d","D"), ("c","C"), ("f","F"), ("a","A")) == c)
+    assert(Map("f" -> "F", "a" -> "A", "b" -> "B", "c" -> "C", "d" -> "D") == c.toMap)
+  }
 }
