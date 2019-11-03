@@ -37,7 +37,7 @@ object Downloader {
 
   def parseParallel(url: Url): Future[SetUrls] = {
     Future{
-      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
+      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf")).filter(!_.endsWith("/"))
     }
   }
 
