@@ -16,6 +16,31 @@ object Downloader {
     findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
   }
 
+  //def parseBunchUrls(urls: SetUrls): Future[Set[SetUrls]] = {
+  //  val futs: Future[Set[Future[SetUrls]]] = Future{
+  //    urls.map{parseParallel(_)}
+  //  }
+  //
+  //  futs.flatMap{ (s: Set[Future[SetUrls]]) =>
+  //    Future.sequence(s)
+  //  }
+  //}
+
+  def parseBunchUrls(urls: SetUrls): Future[MapUrls] = {
+      val whatever: Set[Future[SetUrls]] = urls.map{ url => parseParallel(url)}
+      val futs: Future[Set[SetUrls]] = Future.sequence(whatever)
+
+      futs.map{f =>
+        (urls zip f).toMap
+      }
+  }
+
+  def parseParallel(url: Url): Future[SetUrls] = {
+    Future{
+      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
+    }
+  }
+
   def getHtml(url: Url): Future[Document] = {
     Future {Jsoup.connect(url).get}
   }

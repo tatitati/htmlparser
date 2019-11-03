@@ -63,4 +63,13 @@ class DownloaderSpec extends FunSuite {
 
     println(a ++ b) // Set(f, a, b, c, d)
   }
+
+  test("extract all values from a map") {
+    val a = Map(
+      "aa" -> Set("a", "b"),
+      "bb" -> Set("c", "d")
+    )
+
+    assert(Set("a", "b", "c", "d") === a.values.toSet.flatten)
+  }
 }

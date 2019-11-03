@@ -2,36 +2,30 @@ package crawler
 
 import crawler.Downloader.{MapUrls, SetUrls, Url}
 import scala.collection.immutable.Queue
+import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object Spider {
   def main(args: Array[String]): Unit = {
-    scan(Queue(Baseurl.url))
+    scan(Set(Baseurl.url))
+
+    Thread.sleep(80000)
   }
 
-  def scan(queue: Queue[Url], mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()): MapUrls = {
+  def scan(unexploredUrls: SetUrls = Set(), mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()):Unit = {
+    val futureUrls: Future[MapUrls] = Downloader.parseBunchUrls(unexploredUrls)
+    
+    futureUrls foreach { (m: MapUrls) =>
+      val parsedUrls: SetUrls = m.values.toSet.flatten
+      val newUnexploredUrls: SetUrls = parsedUrls diff discoveredUrls
+      val newDiscoveredUrls: SetUrls = discoveredUrls ++ newUnexploredUrls
 
-    queue.isEmpty match {
-      case true => mapProcessed
-      case false =>
-        val (url, q) = queue.dequeue
-
-        if(!mapProcessed.contains(url)) {
-          val parsedUrls: SetUrls = Downloader.parseUrlSerial(url)
-          val newDiscoveredUrls: SetUrls = parsedUrls diff discoveredUrls
-          val newAll: SetUrls = discoveredUrls ++ newDiscoveredUrls
-
-          scan(q ++ newDiscoveredUrls, mapProcessed ++ Map(url -> parsedUrls), newAll)
-        } else {
-          scan(q, mapProcessed, discoveredUrls)
-        }
+      if(!newUnexploredUrls.isEmpty) {
+        scan(newUnexploredUrls, mapProcessed ++ m, newDiscoveredUrls)
+      }
     }
-
-    println("RESULT:")
-    for((k, v) <- mapProcessed){
-      println("URL:" + k)
-      println(v.foreach{_ => println("\t\t" + _)})
-      println("################")
-    }
-    mapProcessed
   }
 }
