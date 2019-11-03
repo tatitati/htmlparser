@@ -12,20 +12,6 @@ object Downloader {
   type SetUrls = Set[String]
   type MapUrls = Map[Url, SetUrls]
 
-  def parseUrlSerial(url: Url): SetUrls = {
-    findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf"))
-  }
-
-  //def parseBunchUrls(urls: SetUrls): Future[Set[SetUrls]] = {
-  //  val futs: Future[Set[Future[SetUrls]]] = Future{
-  //    urls.map{parseParallel(_)}
-  //  }
-  //
-  //  futs.flatMap{ (s: Set[Future[SetUrls]]) =>
-  //    Future.sequence(s)
-  //  }
-  //}
-
   def parseBunchUrls(urls: SetUrls): Future[MapUrls] = {
       val whatever: Set[Future[SetUrls]] = urls.map{ url => parseParallel(url)}
       val futs: Future[Set[SetUrls]] = Future.sequence(whatever)
@@ -37,19 +23,18 @@ object Downloader {
 
   def parseParallel(url: Url): Future[SetUrls] = {
     Future{
-      findLinks(getHtmlSerial(url)).filter(!_.endsWith("pdf")).filter(!_.endsWith("/"))
+      parseLinks(getHtml(url))
+        .filter(!_.endsWith("pdf"))
+        .filter(!_.endsWith("xml"))
+        .filter(!_.endsWith("/"))
     }
   }
 
-  def getHtml(url: Url): Future[Document] = {
-    Future {Jsoup.connect(url).get}
-  }
-
-  def getHtmlSerial(url: Url): Document = {
+  def getHtml(url: Url): Document = {
     Jsoup.connect(url).get
   }
 
-  def findLinks(doc: Document): SetUrls = {
+  def parseLinks(doc: Document): SetUrls = {
     val body: Element = doc.body()
     val links: mutable.Buffer[Element] = body.select("a").asScala
 
