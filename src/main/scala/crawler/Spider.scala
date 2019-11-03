@@ -23,8 +23,10 @@ object Spider {
       val newUnexploredUrls: SetUrls = parsedUrls diff discoveredUrls
       val newDiscoveredUrls: SetUrls = discoveredUrls ++ newUnexploredUrls
 
-      if(!newUnexploredUrls.isEmpty) {
+      if(newDiscoveredUrls.size != mapProcessed.keys.toSet.size) {
         scan(newUnexploredUrls, mapProcessed ++ m, newDiscoveredUrls)
+      } else {
+        println(mapProcessed.keys)
       }
     }
   }

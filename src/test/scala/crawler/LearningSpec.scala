@@ -78,10 +78,8 @@ class LearningSpec extends FunSuite {
     }
 
     val result = justwait(5)
-
     val total = Await.result(result, 5 seconds)
+
     assert(6 == total)
-
-
   }
 }
