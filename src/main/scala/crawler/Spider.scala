@@ -10,14 +10,14 @@ import scala.concurrent.duration._
 
 object Spider {
   def main(args: Array[String]): Unit = {
-    scan(Set(Baseurl.url))
+    val result = scan(Set(Baseurl.url))
 
     Thread.sleep(80000)
   }
 
-  def scan(unexploredUrls: SetUrls = Set(), mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()):Unit = {
+  def scan(unexploredUrls: SetUrls = Set(), mapProcessed: MapUrls = Map(), discoveredUrls: SetUrls = Set()): Future[MapUrls] = {
     val futureUrls: Future[MapUrls] = Downloader.parseBunchUrls(unexploredUrls)
-    
+
     futureUrls foreach { (m: MapUrls) =>
       val parsedUrls: SetUrls = m.values.toSet.flatten
       val newUnexploredUrls: SetUrls = parsedUrls diff discoveredUrls

@@ -55,7 +55,7 @@ class LearningSpec extends FunSuite {
     Thread.sleep(50000)
   }
 
-  test("set + future?"){
+  test("Can convert a list of futures in a future of lists"){
     val a = List(1, 2, 3, 4, 5, 6)
     val b: List[Future[Int]] = a.map{ n =>
       Future{n * 10}
