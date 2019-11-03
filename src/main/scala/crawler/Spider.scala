@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Spider {
   def main(args: Array[String]): Unit = {
-    scan(Set(Baseurl.url), limitDeepLevel = 3)
+    scan(Set(Baseurl.url), limitDeepLevel = 1)
     Thread.sleep(160000)
   }
 

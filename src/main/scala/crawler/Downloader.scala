@@ -23,6 +23,7 @@ object Downloader {
 
   def parseParallel(url: Url): Future[SetUrls] = {
     Future{
+      //println(Thread.currentThread.getName() + " | with url: " + url)
       parseLinks(getHtml(url))
         .filter(!_.endsWith("pdf"))
         .filter(!_.endsWith("xml"))
