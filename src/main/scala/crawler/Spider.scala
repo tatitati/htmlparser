@@ -20,7 +20,7 @@ object Spider {
       val newMapProcessed = mapProcessed ++ m
 
       if(exploredDeepLevel != limitDeepLevel) {
-        printMap(exploredDeepLevel, m)
+        showMap(exploredDeepLevel, m)
         scan(newUnexploredUrls, limitDeepLevel, exploredDeepLevel + 1, newMapProcessed, newExploredUrls)
       } else {
         println("Done.")
@@ -28,7 +28,7 @@ object Spider {
     }
   }
 
-  private def printMap(exploredDeepLevel: Int, m: MapUrls) = {
+  private def showMap(exploredDeepLevel: Int, m: MapUrls) = {
     println("LEVEL: " + exploredDeepLevel)
     println("==============")
     for ((url, listUrls) <- m) {
